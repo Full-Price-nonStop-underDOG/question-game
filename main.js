@@ -8,7 +8,8 @@ import {
   collection,
   doc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot
 } from
 "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -65,10 +66,29 @@ async function joinRoom(roomId, userName) {
     return userRef.id;
   }
 
+  
+  function subscribeToRoom(roomId) {
+    const roomRef = doc(db, "rooms", roomId);
+  
+    onSnapshot(roomRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        console.log("Room does not exist");
+        return;
+      }
+  
+      const data = snapshot.data();
+      console.log("ROOM UPDATE:", data);
+    });
+  }
+  
+
   async function main() {
     const roomId = await createRoom();
     await joinRoom(roomId, "Alice");
+  
+    subscribeToRoom(roomId);
   }
+  
   
   main();
   
