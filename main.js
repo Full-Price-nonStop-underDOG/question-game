@@ -41,6 +41,13 @@ if (createGameBtn) {
   });
 }
 
+const joinGameBtn = document.getElementById("joinGameBtn");
+if (joinGameBtn) {
+    joinGameBtn.addEventListener("click", () => {
+    window.location.href = "connection_screen.html";
+  });
+}
+
 
 
 const backBtn = document.getElementById("backBtn");
