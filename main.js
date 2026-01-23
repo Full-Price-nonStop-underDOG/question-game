@@ -46,6 +46,7 @@ if (joinGameBtn) {
     joinGameBtn.addEventListener("click", () => {
     window.location.href = "connection_screen.html";
   });
+  console.log("Join game button clicked");
 }
 
 
