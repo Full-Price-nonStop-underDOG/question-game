@@ -34,6 +34,23 @@ export { db };
 
 console.log("Firebase initialized");
 
+const createGameBtn = document.getElementById("createGameBtn");
+if (createGameBtn) {
+  createGameBtn.addEventListener("click", () => {
+    window.location.href = "creater_screen.html";
+  });
+}
+
+
+
+const backBtn = document.getElementById("backBtn");
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+}
+
+
 // createRoom
 
 async function createRoom() {
@@ -66,7 +83,7 @@ async function joinRoom(roomId, userName) {
     return userRef.id;
   }
 
-  
+
   function subscribeToRoom(roomId) {
     const roomRef = doc(db, "rooms", roomId);
   
@@ -90,6 +107,6 @@ async function joinRoom(roomId, userName) {
   }
   
   
-  main();
+  //main();
   
   
