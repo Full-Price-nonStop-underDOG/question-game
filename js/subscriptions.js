@@ -1,6 +1,7 @@
 import { db } from "./firebase.js";
 import {
   doc,
+  collection,
   onSnapshot
 } from
 "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -19,4 +20,27 @@ function subscribeToRoom(roomId) {
     });
   }
 
-export { subscribeToRoom };
+// Subscribe to users collection in a room
+function subscribeToRoomUsers(roomId, onUsersUpdate) {
+  const usersRef = collection(db, "rooms", roomId, "users");
+  
+  const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+    const users = [];
+    snapshot.forEach((doc) => {
+      const userData = doc.data();
+      users.push({
+        id: doc.id,
+        name: userData.name || "",
+        role: userData.role || "player",
+        ready: userData.ready || false
+      });
+    });
+    
+    console.log("Users update:", users);
+    onUsersUpdate(users);
+  });
+  
+  return unsubscribe;
+}
+
+export { subscribeToRoom, subscribeToRoomUsers };

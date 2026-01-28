@@ -144,3 +144,31 @@ if (roomCodeElement) {
     roomCodeElement.textContent = roomCode;
   }
 }
+
+// Initialize real-time users list in lobby
+const usersListElement = document.getElementById("usersList");
+if (usersListElement) {
+  // Get roomId from sessionStorage (set when creating or joining a room)
+  const roomId = sessionStorage.getItem("roomId");
+  
+  if (roomId) {
+    // Import subscription function
+    import("./subscriptions.js").then(({ subscribeToRoomUsers }) => {
+      // Subscribe to users collection updates
+      subscribeToRoomUsers(roomId, (users) => {
+        // Clear existing list
+        usersListElement.innerHTML = "";
+        
+        // Render each user
+        users.forEach((user) => {
+          const listItem = document.createElement("li");
+          listItem.className = "player-item";
+          listItem.textContent = user.name;
+          usersListElement.appendChild(listItem);
+        });
+      });
+    });
+  } else {
+    console.log("No roomId found in sessionStorage");
+  }
+}
