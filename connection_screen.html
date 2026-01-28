@@ -10,10 +10,10 @@
   <button id="backBtn" class="back-button" aria-label="Назад">←</button>
   <main>
     <h1>Подключение к комнате</h1>
-    <form class="form-container">
-      <input type="text" placeholder="Введите ваше имя" class="name-input" />
-      <input type="text" placeholder="Введите номер комнаты" class="name-input" />
-      <button id="toLobbyBtn" type="button">Подключиться</button>
+    <form id="connectRoomForm" class="form-container">
+      <input id="connectUserNameInput" type="text" placeholder="Введите ваше имя" class="name-input" />
+      <input id="roomCodeInput" type="text" placeholder="Введите номер комнаты" class="name-input" />
+      <button id="connectRoomBtn" type="button">Подключиться</button>
     </form>
   </main>
   <script type="module" src="./js/main.js"></script>

@@ -10,6 +10,12 @@
   <button id="backBtn" class="back-button" aria-label="Назад">←</button>
   <main>
     <h1>Лобби</h1>
+    <!-- TODO: Room code should be visible only to the host in the future -->
+    <!-- TODO: Replace hardcoded value with real data from Firestore -->
+    <div class="room-code-block">
+      <span class="room-code-label">Код комнаты</span>
+      <span id="roomCode" class="room-code">AB12</span>
+    </div>
     <section class="lobby-content">
       <h2 class="section-title">Участники</h2>
       <ul class="players-list">

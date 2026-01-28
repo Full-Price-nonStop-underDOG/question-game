@@ -3,40 +3,84 @@ import {
   collection,
   doc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  where,
+  getDocs
 } from
 "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Generate a 4-character room code (A-Z, 0-9)
+function generateRoomCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
 
 // createRoom
 
 async function createRoom() {
   // создаём новый документ с авто-ID
   const roomRef = doc(collection(db, "rooms"));
+  
+  // Generate room code
+  const code = generateRoomCode();
 
   await setDoc(roomRef, {
     status: "waiting",
+    code: code,
     createdAt: serverTimestamp(),
   });
 
-  console.log("Room created with id:", roomRef.id);
+  console.log("Room created with id:", roomRef.id, "code:", code);
 
-  return roomRef.id;
+  return { roomId: roomRef.id, code: code };
 }
 
 
-async function joinRoom(roomId, userName) {
+async function joinRoom(roomId, userName, role = "player") {
     const userRef = doc(
       collection(db, "rooms", roomId, "users")
     );
   
     await setDoc(userRef, {
       name: userName,
+      role: role,
+      ready: false,
       joinedAt: serverTimestamp(),
     });
   
-    console.log("User joined room:", userName, "→", roomId);
+    console.log("User joined room:", userName, "→", roomId, "as", role);
   
     return userRef.id;
   }
 
-export { createRoom, joinRoom };
+// Find room by access code
+async function findRoomByCode(code) {
+  const roomsRef = collection(db, "rooms");
+  const q = query(roomsRef, where("code", "==", code));
+  
+  try {
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      console.log("Room not found with code:", code);
+      return null;
+    }
+    
+    // Get the first matching room (assuming unique codes)
+    const roomDoc = querySnapshot.docs[0];
+    const roomId = roomDoc.id;
+    
+    console.log("Room found with code:", code, "roomId:", roomId);
+    return roomId;
+  } catch (error) {
+    console.error("Error finding room by code:", error);
+    return null;
+  }
+}
+
+export { createRoom, joinRoom, findRoomByCode };
