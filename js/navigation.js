@@ -177,13 +177,14 @@ if (roomCodeElement) {
 
 // Initialize real-time users list in lobby
 const usersListElement = document.getElementById("usersList");
+const startGameBtn = document.getElementById("startGameBtn");
 if (usersListElement) {
   // Get roomId from sessionStorage (set when creating or joining a room)
   const roomId = sessionStorage.getItem("roomId");
   
   if (roomId) {
-    // Import subscription function
-    import("./subscriptions.js").then(({ subscribeToRoomUsers }) => {
+    // Import subscription functions
+    import("./subscriptions.js").then(({ subscribeToRoomUsers, subscribeToRoom }) => {
       // Subscribe to users collection updates
       subscribeToRoomUsers(roomId, (users) => {
         // Clear existing list
@@ -205,16 +206,54 @@ if (usersListElement) {
         
         // Update ready button state based on current user
         const currentUserId = sessionStorage.getItem("userId");
-        if (currentUserId && readinessBtn) {
+        let isHost = false;
+        let allReady = false;
+
+        if (currentUserId) {
           const currentUser = users.find(u => u.id === currentUserId);
+
           if (currentUser) {
-            if (currentUser.ready) {
-              readinessBtn.classList.add("is-ready");
-              readinessBtn.textContent = "Готов";
-            } else {
-              readinessBtn.classList.remove("is-ready");
-              readinessBtn.textContent = "Не готов";
+            // Determine if current user is host
+            isHost = currentUser.role === "host";
+
+            // Sync readiness button with current user state
+            if (readinessBtn) {
+              if (currentUser.ready) {
+                readinessBtn.classList.add("is-ready");
+                readinessBtn.textContent = "Готов";
+              } else {
+                readinessBtn.classList.remove("is-ready");
+                readinessBtn.textContent = "Не готов";
+              }
             }
+          }
+        }
+
+        // Determine if all users are ready (and there is at least one user)
+        if (users.length > 0) {
+          allReady = users.every(u => u.ready === true);
+        }
+
+        // Show Start Game button only for host when all users are ready
+        if (startGameBtn) {
+          if (isHost && allReady) {
+            startGameBtn.classList.remove("hidden");
+          } else {
+            startGameBtn.classList.add("hidden");
+          }
+        }
+      });
+
+      // Subscribe to room document to react to status changes (for all clients)
+      subscribeToRoom(roomId, (roomData) => {
+        if (!roomData) return;
+
+        // If room is already active, or just became active, navigate to game
+        if (roomData.status === "active") {
+          // Prevent duplicate redirects
+          if (!window.__roomNavigated) {
+            window.__roomNavigated = true;
+            window.location.href = "game.html";
           }
         }
       });
@@ -222,6 +261,26 @@ if (usersListElement) {
   } else {
     console.log("No roomId found in sessionStorage");
   }
+}
+
+// Handle Start Game button click (host only, when visible)
+if (startGameBtn) {
+  startGameBtn.addEventListener("click", async () => {
+    const roomId = sessionStorage.getItem("roomId");
+
+    if (!roomId) {
+      console.log("Missing roomId for Start Game");
+      return;
+    }
+
+    try {
+      // Update room status to 'active' in Firestore
+      const { updateRoomStatus } = await import("./rooms.js");
+      await updateRoomStatus(roomId, "active");
+    } catch (error) {
+      console.error("Error starting game (updating room status):", error);
+    }
+  });
 }
 
 // Game screen task button handlers

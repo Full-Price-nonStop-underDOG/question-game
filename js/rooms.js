@@ -95,4 +95,15 @@ async function updateUserReady(roomId, userId, ready) {
   console.log("User ready state updated:", userId, "ready:", ready);
 }
 
-export { createRoom, joinRoom, findRoomByCode, updateUserReady };
+// Update room status (e.g. waiting -> active)
+async function updateRoomStatus(roomId, status) {
+  const roomRef = doc(db, "rooms", roomId);
+
+  await updateDoc(roomRef, {
+    status: status
+  });
+
+  console.log("Room status updated:", roomId, "status:", status);
+}
+
+export { createRoom, joinRoom, findRoomByCode, updateUserReady, updateRoomStatus };
