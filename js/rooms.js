@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   setDoc,
+  updateDoc,
   serverTimestamp,
   query,
   where,
@@ -83,4 +84,15 @@ async function findRoomByCode(code) {
   }
 }
 
-export { createRoom, joinRoom, findRoomByCode };
+// Update user ready state
+async function updateUserReady(roomId, userId, ready) {
+  const userRef = doc(db, "rooms", roomId, "users", userId);
+  
+  await updateDoc(userRef, {
+    ready: ready
+  });
+  
+  console.log("User ready state updated:", userId, "ready:", ready);
+}
+
+export { createRoom, joinRoom, findRoomByCode, updateUserReady };

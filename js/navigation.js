@@ -47,6 +47,7 @@ if (toLobbyBtn) {
       // Store room data for use in lobby
       sessionStorage.setItem("roomId", roomData.roomId);
       sessionStorage.setItem("roomCode", roomData.code);
+      sessionStorage.setItem("userId", hostUserId);
       
       console.log("Room created, redirecting to lobby");
       window.location.href = "lobby.html";
@@ -108,6 +109,7 @@ if (connectRoomForm && connectRoomBtn) {
       // Store room data for use in lobby
       sessionStorage.setItem("roomId", roomId);
       sessionStorage.setItem("roomCode", roomCode);
+      sessionStorage.setItem("userId", userId);
       
       // Redirect to lobby after successful join
       console.log("Redirecting to lobby");
@@ -130,9 +132,37 @@ if (backBtn) {
 
 const readinessBtn = document.getElementById("readinessBtn");
 if (readinessBtn) {
-  readinessBtn.addEventListener("click", () => {
-    const isReady = readinessBtn.classList.toggle("is-ready");
-    readinessBtn.textContent = isReady ? "Готов" : "Не готов";
+  readinessBtn.addEventListener("click", async () => {
+    const roomId = sessionStorage.getItem("roomId");
+    const userId = sessionStorage.getItem("userId");
+    
+    if (!roomId || !userId) {
+      console.log("Missing roomId or userId");
+      return;
+    }
+    
+    // Toggle ready state
+    const currentReady = readinessBtn.classList.contains("is-ready");
+    const newReady = !currentReady;
+    
+    try {
+      // Import update function
+      const { updateUserReady } = await import("./rooms.js");
+      
+      // Update Firestore
+      await updateUserReady(roomId, userId, newReady);
+      
+      // Update UI immediately (will also be updated via real-time subscription)
+      if (newReady) {
+        readinessBtn.classList.add("is-ready");
+        readinessBtn.textContent = "Готов";
+      } else {
+        readinessBtn.classList.remove("is-ready");
+        readinessBtn.textContent = "Не готов";
+      }
+    } catch (error) {
+      console.error("Error updating ready state:", error);
+    }
   });
 }
 
@@ -163,9 +193,30 @@ if (usersListElement) {
         users.forEach((user) => {
           const listItem = document.createElement("li");
           listItem.className = "player-item";
+          
+          // Add ready state class if user is ready
+          if (user.ready === true) {
+            listItem.classList.add("user-ready");
+          }
+          
           listItem.textContent = user.name;
           usersListElement.appendChild(listItem);
         });
+        
+        // Update ready button state based on current user
+        const currentUserId = sessionStorage.getItem("userId");
+        if (currentUserId && readinessBtn) {
+          const currentUser = users.find(u => u.id === currentUserId);
+          if (currentUser) {
+            if (currentUser.ready) {
+              readinessBtn.classList.add("is-ready");
+              readinessBtn.textContent = "Готов";
+            } else {
+              readinessBtn.classList.remove("is-ready");
+              readinessBtn.textContent = "Не готов";
+            }
+          }
+        }
       });
     });
   } else {

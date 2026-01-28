@@ -124,6 +124,11 @@ h1 {
   text-align: center;
 }
 
+.player-item.user-ready {
+  background-color: #ff9800;
+  color: #ffffff;
+}
+
 button.readiness-button {
   width: 100%;
   padding: 18px 24px;
