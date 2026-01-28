@@ -223,3 +223,40 @@ if (usersListElement) {
     console.log("No roomId found in sessionStorage");
   }
 }
+
+// Game screen task button handlers
+const taskButtons = document.querySelectorAll(".task-button");
+const confirmationArea = document.getElementById("confirmationArea");
+const confirmationMessage = document.querySelector(".confirmation-message");
+
+if (taskButtons.length > 0 && confirmationArea && confirmationMessage) {
+  taskButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const taskNumber = button.getAttribute("data-task");
+      
+      // Update confirmation message
+      confirmationMessage.textContent = `Вы выполнили задание ${taskNumber}?`;
+      
+      // Show confirmation area
+      confirmationArea.classList.remove("hidden");
+    });
+  });
+  
+  // Confirmation buttons (no action yet)
+  const confirmYes = document.getElementById("confirmYes");
+  const confirmNo = document.getElementById("confirmNo");
+  
+  if (confirmYes) {
+    confirmYes.addEventListener("click", () => {
+      // Placeholder for future logic
+      console.log("Task confirmed");
+    });
+  }
+  
+  if (confirmNo) {
+    confirmNo.addEventListener("click", () => {
+      // Hide confirmation area
+      confirmationArea.classList.add("hidden");
+    });
+  }
+}

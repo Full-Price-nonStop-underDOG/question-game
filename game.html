@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Игра - Question Game</title>
+  <link rel="stylesheet" href="Styles/game.css" />
+</head>
+<body>
+  <main>
+    <h1>Игра</h1>
+    <div class="tasks-container">
+      <button class="task-button" data-task="1">Задание 1</button>
+      <button class="task-button" data-task="2">Задание 2</button>
+      <button class="task-button" data-task="3">Задание 3</button>
+    </div>
+    <div id="confirmationArea" class="confirmation-area hidden">
+      <p class="confirmation-message"></p>
+      <div class="confirmation-buttons">
+        <button class="confirmation-btn" id="confirmYes">Да</button>
+        <button class="confirmation-btn" id="confirmNo">Нет</button>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
