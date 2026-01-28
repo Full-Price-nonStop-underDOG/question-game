@@ -55,6 +55,7 @@ if (toLobbyBtn) {
     window.location.href = "lobby.html";
   });
   console.log("Join game");
+ 
 }
 
 
