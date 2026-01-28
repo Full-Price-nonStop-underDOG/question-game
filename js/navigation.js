@@ -30,3 +30,11 @@ if (backBtn) {
     window.location.href = "index.html";
   });
 }
+
+const readinessBtn = document.getElementById("readinessBtn");
+if (readinessBtn) {
+  readinessBtn.addEventListener("click", () => {
+    const isReady = readinessBtn.classList.toggle("is-ready");
+    readinessBtn.textContent = isReady ? "Готов" : "Не готов";
+  });
+}
